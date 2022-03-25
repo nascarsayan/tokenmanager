@@ -10,6 +10,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	hostname string
+	port     string
+)
+
 // clientCmd represents the client command
 var clientCmd = &cobra.Command{
 	Use:   "client",
@@ -29,6 +34,8 @@ func init() {
 	rootCmd.AddCommand(clientCmd)
 
 	// Here you will define your flags and configuration settings.
+	serverCmd.Flags().StringVar(&hostname, "host", "", "The hostname of the server.")
+	serverCmd.Flags().StringVar(&port, "port", "", "The port on which the server is running.")
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
