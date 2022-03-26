@@ -11,16 +11,12 @@ import (
 )
 
 type DropOptions struct {
-	Hostname string
-	Port     string
-	ID       string
+	ClientOptions
 }
 
 func newCmdDrop(co *ClientOptions) *cobra.Command {
 	opts := DropOptions{
-		Hostname: co.Hostname,
-		Port:     co.Port,
-		ID:       co.ID,
+		ClientOptions: *co,
 	}
 
 	cmd := &cobra.Command{

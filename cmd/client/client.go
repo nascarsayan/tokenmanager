@@ -6,6 +6,7 @@ package client
 
 import (
 	"example.com/tokenmanager/pkg/cmdutil"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +14,15 @@ type ClientOptions struct {
 	Hostname string
 	Port     string
 	ID       string
+	Log      *log.Entry
+}
+
+func (co *ClientOptions) getLogger() *log.Entry {
+	return log.WithFields(log.Fields{
+		"Hostname": co.Hostname,
+		"Port":     co.Port,
+		"ID":       co.ID,
+	})
 }
 
 func NewCmdClient() *cobra.Command {

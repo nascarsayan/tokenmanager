@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"example.com/tokenmanager/cmd/client"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -38,6 +39,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	log.SetFormatter(&log.TextFormatter{})
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

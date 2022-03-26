@@ -11,16 +11,12 @@ import (
 )
 
 type CreateOptions struct {
-	Hostname string
-	Port     string
-	ID       string
+	ClientOptions
 }
 
 func newCmdCreate(co *ClientOptions) *cobra.Command {
 	opts := CreateOptions{
-		Hostname: co.Hostname,
-		Port:     co.Port,
-		ID:       co.ID,
+		ClientOptions: *co,
 	}
 
 	cmd := &cobra.Command{
@@ -28,9 +24,14 @@ func newCmdCreate(co *ClientOptions) *cobra.Command {
 		Short: "Create token for client",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("create called with options")
-			fmt.Printf("%+v", opts)
+			createToken(&opts)
 		},
 	}
 
 	return cmd
+}
+
+func createToken(opts *CreateOptions) {
+	logger := opts.getLogger()
+	logger.Info("Creating Token")
 }

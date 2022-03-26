@@ -11,20 +11,16 @@ import (
 )
 
 type WriteOptions struct {
-	Hostname string
-	Port     string
-	ID       string
-	Name     string
-	Low      int
-	Mid      int
-	High     int
+	ClientOptions
+	Name string
+	Low  int
+	Mid  int
+	High int
 }
 
 func newCmdWrite(co *ClientOptions) *cobra.Command {
 	opts := WriteOptions{
-		Hostname: co.Hostname,
-		Port:     co.Port,
-		ID:       co.ID,
+		ClientOptions: *co,
 	}
 
 	cmd := &cobra.Command{

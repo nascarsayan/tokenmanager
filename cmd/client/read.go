@@ -11,16 +11,12 @@ import (
 )
 
 type ReadOptions struct {
-	Hostname string
-	Port     string
-	ID       string
+	ClientOptions
 }
 
 func newCmdRead(co *ClientOptions) *cobra.Command {
 	opts := ReadOptions{
-		Hostname: co.Hostname,
-		Port:     co.Port,
-		ID:       co.ID,
+		ClientOptions: *co,
 	}
 
 	cmd := &cobra.Command{
