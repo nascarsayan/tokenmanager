@@ -28,7 +28,7 @@ message DropTokenResponse {
 
 message WriteTokenRequest {
   string id = 1;
-  uint64 name = 2;
+  string name = 2;
   uint64 low = 3;
   uint64 high = 4;
   uint64 mid = 5;

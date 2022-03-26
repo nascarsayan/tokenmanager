@@ -5,12 +5,12 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"strings"
 
 	"example.com/tokenmanager/pkg/cmdutil"
+	"example.com/tokenmanager/pkg/server"
 	pb "example.com/tokenmanager/pkg/token"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -62,10 +62,9 @@ func startServer(opts *ServerOptions) {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	tokens = make(map[string]Token)
 	grpcServer := grpc.NewServer()
 
-	pb.RegisterTokenServer(grpcServer, &Server{})
+	pb.RegisterTokenServer(grpcServer, &server.Server{})
 
 	log.Printf("GRPC server listening on %v", lis.Addr())
 
@@ -82,32 +81,4 @@ type Token struct {
 	High    uint64
 	Partial uint64
 	Final   uint64
-}
-
-var tokens map[string]Token
-
-type Server struct {
-	pb.UnimplementedTokenServer
-}
-
-func (s *Server) CreateToken(
-	ctx context.Context, req *pb.CreateTokenRequest) (*pb.CreateTokenResponse, error) {
-
-	var res pb.CreateTokenResponse
-	if req == nil {
-		msg := "request must not be nil"
-		log.Info(msg)
-		return &res, fmt.Errorf(msg)
-	}
-
-	if req.Id == "" {
-		msg := "token id must not be empty"
-		log.Info(msg)
-		return &res, fmt.Errorf(msg)
-	}
-
-	tokens[req.Id] = Token{
-		Id: req.Id,
-	}
-	return &res, nil
 }
