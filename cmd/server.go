@@ -5,6 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"strings"
@@ -49,10 +50,6 @@ func NewCmdServer() *cobra.Command {
 	return cmd
 }
 
-type Server struct {
-	pb.UnimplementedTokenServer
-}
-
 func startServer(opts *ServerOptions) {
 	logger := opts.getLogger()
 	logger.Info("Starting server")
@@ -75,4 +72,42 @@ func startServer(opts *ServerOptions) {
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+type Token struct {
+	Id      string
+	Name    string
+	Low     uint64
+	Mid     uint64
+	High    uint64
+	Partial uint64
+	Final   uint64
+}
+
+var tokens map[string]Token
+
+type Server struct {
+	pb.UnimplementedTokenServer
+}
+
+func (s *Server) CreateToken(
+	ctx context.Context, req *pb.CreateTokenRequest) (*pb.CreateTokenResponse, error) {
+
+	var res pb.CreateTokenResponse
+	if req == nil {
+		msg := "request must not be nil"
+		log.Info(msg)
+		return &res, fmt.Errorf(msg)
+	}
+
+	if req.Id == "" {
+		msg := "token id must not be empty"
+		log.Info(msg)
+		return &res, fmt.Errorf(msg)
+	}
+
+	tokens[req.Id] = Token{
+		Id: req.Id,
+	}
+	return &res, nil
 }
