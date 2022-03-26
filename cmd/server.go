@@ -62,7 +62,7 @@ func startServer(opts *ServerOptions) {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-
+	tokens = make(map[string]Token)
 	grpcServer := grpc.NewServer()
 
 	pb.RegisterTokenServer(grpcServer, &Server{})
