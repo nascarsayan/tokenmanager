@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	pb "example.com/tokenmanager/pkg/token"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 type Token struct {
@@ -34,9 +34,13 @@ func (s *Server) CreateToken(
 	var res pb.CreateTokenResponse
 	if req == nil {
 		msg := "request must not be nil"
-		log.Info(msg)
+		logrus.Info(msg)
 		return &res, fmt.Errorf(msg)
 	}
+
+	log := logrus.WithFields(logrus.Fields{
+		"id": req.Id,
+	})
 
 	if req.Id == "" {
 		msg := "token id must not be empty"
@@ -44,6 +48,7 @@ func (s *Server) CreateToken(
 		return &res, fmt.Errorf(msg)
 	}
 
+	log.Info("Creating token")
 	tokens[req.Id] = Token{
 		Id: req.Id,
 	}
@@ -56,9 +61,13 @@ func (s *Server) DropToken(
 	var res pb.DropTokenResponse
 	if req == nil {
 		msg := "request must not be nil"
-		log.Info(msg)
+		logrus.Info(msg)
 		return &res, fmt.Errorf(msg)
 	}
+
+	log := logrus.WithFields(logrus.Fields{
+		"id": req.Id,
+	})
 
 	if req.Id == "" {
 		msg := "token id must not be empty"
@@ -66,6 +75,7 @@ func (s *Server) DropToken(
 		return &res, fmt.Errorf(msg)
 	}
 
+	log.Info("Deleting token")
 	delete(tokens, req.Id)
 	return &res, nil
 }
@@ -76,9 +86,17 @@ func (s *Server) WriteToken(
 	var res pb.WriteTokenResponse
 	if req == nil {
 		msg := "request must not be nil"
-		log.Info(msg)
+		logrus.Info(msg)
 		return &res, fmt.Errorf(msg)
 	}
+
+	log := logrus.WithFields(logrus.Fields{
+		"id":   req.Id,
+		"name": req.Name,
+		"low":  req.Low,
+		"mid":  req.Mid,
+		"high": req.High,
+	})
 
 	if req.Id == "" {
 		msg := "token id must not be empty"
@@ -87,7 +105,9 @@ func (s *Server) WriteToken(
 	}
 
 	if !((req.Low < req.Mid) && (req.Mid < req.High)) {
-		msg := "The following condition is not met: low < mid < high"
+		msg := fmt.Sprintf(
+			"The following condition is not met: low < mid < high: %d < %d < %d",
+			req.Low, req.Mid, req.High)
 		log.Info(msg)
 		return &res, fmt.Errorf(msg)
 	}
@@ -97,6 +117,8 @@ func (s *Server) WriteToken(
 		log.Info(msg)
 		return &res, fmt.Errorf(msg)
 	}
+
+	log.Info("Writing token")
 
 	partial := computeArgMinHash(req.Name, req.Low, req.Mid)
 
@@ -119,9 +141,13 @@ func (s *Server) ReadToken(
 	var res pb.ReadTokenResponse
 	if req == nil {
 		msg := "request must not be nil"
-		log.Info(msg)
+		logrus.Info(msg)
 		return &res, fmt.Errorf(msg)
 	}
+
+	log := logrus.WithFields(logrus.Fields{
+		"id": req.Id,
+	})
 
 	if req.Id == "" {
 		msg := "token id must not be empty"
@@ -140,6 +166,8 @@ func (s *Server) ReadToken(
 		log.Info(msg)
 		return &res, fmt.Errorf(msg)
 	}
+
+	log.Info("Reading token")
 
 	final := computeArgMinHash(tokens[req.Id].Name, tokens[req.Id].Mid, tokens[req.Id].High)
 

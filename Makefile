@@ -34,3 +34,5 @@ generate:
 tidy:
 	go mod tidy -compat=1.17
 
+build:
+	go build -o bin/tokenmanager main.go

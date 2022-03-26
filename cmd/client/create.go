@@ -28,8 +28,6 @@ func newCmdCreate(co *ClientOptions) *cobra.Command {
 		Use:   "create",
 		Short: "Create token for client",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("create called with options")
-			fmt.Printf("%+v", opts)
 			createToken(&opts)
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
