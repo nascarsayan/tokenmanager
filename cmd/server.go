@@ -72,13 +72,3 @@ func startServer(opts *ServerOptions) {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
-
-type Token struct {
-	Id      string
-	Name    string
-	Low     uint64
-	Mid     uint64
-	High    uint64
-	Partial uint64
-	Final   uint64
-}

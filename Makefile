@@ -9,7 +9,7 @@ ifeq (x86_32,$(shell uname -i))
 	arch = linux-x86_32
 endif
 
-all: protoc generate
+all: protoc generate tidy build
 
 PROTOC = $(shell pwd)/bin/protoc
 protoc:

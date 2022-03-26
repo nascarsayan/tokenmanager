@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"sync"
 
 	pb "example.com/tokenmanager/pkg/token"
 	"github.com/sirupsen/logrus"
@@ -19,6 +21,21 @@ type Token struct {
 }
 
 var tokens map[string]Token
+var tokenMu sync.Mutex
+
+func logTokenInfo(log *logrus.Entry, id string) {
+	token, err := json.Marshal(tokens[id])
+	if err != nil {
+		log.Info("Could not fetch token details")
+	}
+	log.Infof("Token content: %+v", string(token))
+
+	tokenIds := make([]string, 0, len(tokens))
+	for k := range tokens {
+		tokenIds = append(tokenIds, k)
+	}
+	log.Infof("Token ids present: %+v", tokenIds)
+}
 
 type Server struct {
 	pb.UnimplementedTokenServer
@@ -49,9 +66,15 @@ func (s *Server) CreateToken(
 	}
 
 	log.Info("Creating token")
+
+	tokenMu.Lock()
+	defer tokenMu.Unlock()
+
 	tokens[req.Id] = Token{
 		Id: req.Id,
 	}
+
+	logTokenInfo(log, req.Id)
 	return &res, nil
 }
 
@@ -76,7 +99,13 @@ func (s *Server) DropToken(
 	}
 
 	log.Info("Deleting token")
+
+	tokenMu.Lock()
+	defer tokenMu.Unlock()
+
 	delete(tokens, req.Id)
+
+	logTokenInfo(log, req.Id)
 	return &res, nil
 }
 
@@ -91,11 +120,11 @@ func (s *Server) WriteToken(
 	}
 
 	log := logrus.WithFields(logrus.Fields{
-		"id":   req.Id,
-		"name": req.Name,
-		"low":  req.Low,
-		"mid":  req.Mid,
-		"high": req.High,
+		"id": req.Id,
+		// "name": req.Name,
+		// "low":  req.Low,
+		// "mid":  req.Mid,
+		// "high": req.High,
 	})
 
 	if req.Id == "" {
@@ -111,6 +140,9 @@ func (s *Server) WriteToken(
 		log.Info(msg)
 		return &res, fmt.Errorf(msg)
 	}
+
+	tokenMu.Lock()
+	defer tokenMu.Unlock()
 
 	if tokens[req.Id].Id == "" {
 		msg := "token id not found in server"
@@ -132,6 +164,8 @@ func (s *Server) WriteToken(
 		Final:   nil,
 	}
 	res.Partial = partial
+
+	logTokenInfo(log, req.Id)
 	return &res, nil
 }
 
@@ -155,6 +189,9 @@ func (s *Server) ReadToken(
 		return &res, fmt.Errorf(msg)
 	}
 
+	tokenMu.Lock()
+	defer tokenMu.Unlock()
+
 	if tokens[req.Id].Id == "" {
 		msg := "token id not found in server"
 		log.Info(msg)
@@ -175,5 +212,7 @@ func (s *Server) ReadToken(
 	token.Final = &final
 	tokens[req.Id] = token
 	res.Final = final
+
+	logTokenInfo(log, req.Id)
 	return &res, nil
 }
