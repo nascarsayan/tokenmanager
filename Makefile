@@ -36,3 +36,6 @@ tidy:
 
 build:
 	go build -o bin/tokenmanager main.go
+
+archive:
+	git archive --format zip -o tokenmanager.zip master
