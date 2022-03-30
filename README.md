@@ -1,7 +1,11 @@
-### Instructions
+## Scripts
 
-Start the server on some machine
-`./runserver.sh`
+Check the scripts folder for the scripts.
 
-Invoke some client commands on the same machine
-`./runclient.sh`
+### Start server
+
+`./scripts/server.sh`
+
+### Run sample client commands
+
+`./scripts/client.sh`

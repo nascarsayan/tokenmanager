@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option go_package = "grpc.io/tokenman/src/pb";
+
+package token;
+
+message CreateReq {
+  string id = 1;
+}
+
+message CreateRes {
+}
+
+message DropReq {
+  string id = 1;
+}
+
+message DropRes {
+}
+
+message WriteReq {
+  string id = 1;
+  string name = 2;
+  uint64 low = 3;
+  uint64 high = 4;
+  uint64 mid = 5;
+}
+
+message WriteRes {
+  uint64 partialVal = 1;
+}
+
+message ReadReq {
+  string id = 1;
+}
+
+message ReadRes {
+  uint64 finalVal = 1;
+}
+
+service Token {
+  rpc Create (CreateReq) returns (CreateRes) {}
+  rpc Drop (DropReq) returns (DropRes) {}
+  rpc Write (WriteReq) returns (WriteRes) {}
+  rpc Read (ReadReq) returns (ReadRes) {}
+}

@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"crypto/sha256"
@@ -13,14 +13,14 @@ func Hash(name string, nonce uint64) uint64 {
 	return binary.BigEndian.Uint64(hasher.Sum(nil))
 }
 
-// computeArgMinHash finds the value in the range [start, end), for which Hash is minimum.
-func computeArgMinHash(name string, start uint64, end uint64) uint64 {
+// getArgMin finds the value in the range [start, end), for which the Hash is minimum.
+func getArgMin(name string, start uint64, end uint64) uint64 {
 	partial := start
-	minVal := Hash(name, start)
+	minV := Hash(name, start)
 	for i := start + 1; i < end; i++ {
 		currVal := Hash(name, i)
-		if currVal < minVal {
-			minVal = currVal
+		if currVal < minV {
+			minV = currVal
 			partial = i
 		}
 	}
